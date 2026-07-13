@@ -1,58 +1,100 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# NexusPM
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+NexusPM is a professional, high-performance project management web application built with Laravel 12. It serves as an enterprise-grade solution featuring multi-tenant organizations, project-specific collaboration, real-time Kanban boards, event-driven auditing, and activity logging.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Tech Stack & Core Technologies
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Backend Framework**: Laravel 12.x
+- **Development Tooling**: Laragon, Docker (Sprint 5)
+- **Database**: MySQL 8.x
+- **Cache & Queue Driver**: Redis & Horizon
+- **Authentication**: Laravel Breeze
+- **Authorization**: Spatie Permission (with Custom Policies)
+- **API & Testing**: PHPUnit/Pest
+- **Code Quality**: Laravel Pint (CS) & Larastan (Static Analysis)
+- **Activity Logging**: Spatie Activitylog
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🏗️ Architectural Decisions
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+This project follows modern, robust development practices:
+- **No Repository Pattern**: We leverage Eloquent directly combined with dedicated single-responsibility **Actions** and **Services** (e.g., `CreateProjectAction`).
+- **PHP Enums**: Hardcoded strings are avoided. Business-critical states like `ProjectStatus`, `TaskStatus`, `TaskPriority`, and `ProjectRole` are strictly typed PHP Enums.
+- **Audit Fields**: Tracking resource changes using `created_by`, `updated_by`, and `deleted_by` fields.
+- **Strict Database Constraints**: Unique scoped indexes on pivot tables and scoped slugs (e.g., project slugs are unique per organization).
+- **GitHub Actions CI**: Automated code style formatting (Pint) and static analysis (Larastan) on every pull request.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 🛠️ Installation & Setup
 
-## Agentic Development
+### Prerequisites
+- PHP 8.3+
+- Composer
+- MySQL/Redis (via Laragon or Docker)
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+### Steps
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/yourusername/nexuspm.git
+   cd nexuspm
+   ```
+2. **Install Composer dependencies**:
+   ```bash
+   composer install
+   ```
+3. **Configure Environment File**:
+   Copy `.env.example` to `.env` and configure your database and redis credentials.
+4. **Generate Application Key**:
+   ```bash
+   php artisan key:generate
+   ```
+5. **Run Migrations & Seeders**:
+   ```bash
+   php artisan migrate --seed
+   ```
+6. **Code Styling & Analysis**:
+   ```bash
+   # Linting
+   ./vendor/bin/pint
+   # Static Analysis
+   ./vendor/bin/phpstan analyse
+   ```
 
-```bash
-composer require laravel/boost --dev
+---
 
-php artisan boost:install
-```
+## 📅 Roadmap (Sprints)
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Sprint 0 (Tooling & CI)
+- [x] Code standard enforcement (Pint, Larastan)
+- [x] Barryvdh IDE Helper & Local Dev packages
+- [x] CI workflows (GitHub Actions)
+- [x] Initial README.md structure
 
-## Contributing
+### Sprint 1 (Foundations)
+- [ ] Authentication Setup (Breeze)
+- [ ] Multi-tenant Organizations
+- [ ] Projects and Membership Scoping
+- [ ] Policies & Form Requests validation
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Sprint 2 (Core Logic)
+- [ ] Tasks, Comments, and Polymorphic Attachments
+- [ ] Task Checklist
 
-## Code of Conduct
+### Sprint 3 (User Management & Policies)
+- [ ] Spatie Roles & Permissions
+- [ ] Interactive Dashboard
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Sprint 4 (Events & Queue Optimization)
+- [ ] Event-driven Notifications and Mailers
+- [ ] Horizon configuration for Redis Queue
+- [ ] Activity logs hookups (Spatie Activitylog)
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Sprint 5 (Polishing & Delivery)
+- [ ] API Endpoints
+- [ ] Complete Test Suite (Feature/Unit)
+- [ ] Dockerization
+- [ ] Final Presentation

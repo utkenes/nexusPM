@@ -10,6 +10,7 @@ class TaskController extends Controller
     public function index()
     {
         $tasks = Task::latest()->get();
+
         return view('dashboard', compact('tasks'));
     }
 
