@@ -16,10 +16,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
-use App\Http\Controllers\TaskController;
-
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [TaskController::class, 'index'])->name('dashboard');
-    Route::post('/tasks', [TaskController::class, 'store'])->name('tasks.store');
-});
 require __DIR__.'/auth.php';
+require __DIR__.'/dashboard.php';
+require __DIR__.'/organizations.php';
+require __DIR__.'/projects.php';
+require __DIR__.'/tasks.php';

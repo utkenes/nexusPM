@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Enums\ProjectStatus;
+use Carbon\Carbon;
 use Database\Factories\ProjectFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +13,24 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+/**
+ * @property int $id
+ * @property int $organization_id
+ * @property string $title
+ * @property string $slug
+ * @property string|null $description
+ * @property ProjectStatus $status
+ * @property Carbon|null $start_date
+ * @property Carbon|null $due_date
+ * @property int $created_by
+ * @property int|null $updated_by
+ * @property int|null $deleted_by
+ * @property Organization $organization
+ * @property Collection<int, User> $members
+ * @property User $creator
+ * @property User|null $updater
+ * @property Collection<int, Task> $tasks
+ */
 class Project extends Model
 {
     /** @use HasFactory<ProjectFactory> */

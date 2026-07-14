@@ -15,11 +15,57 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('projects.index')" :active="request()->routeIs('projects.*')">
+                        {{ __('Projects') }}
+                    </x-nav-link>
+                    <x-nav-link :href="route('organizations.index')" :active="request()->routeIs('organizations.*')">
+                        {{ __('Organizations') }}
+                    </x-nav-link>
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <!-- Settings & Workspace Switcher -->
+            <div class="hidden sm:flex sm:items-center sm:ms-6 space-x-4">
+                @if(Auth::user()->currentOrganization)
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-600 bg-indigo-50 hover:bg-indigo-100 focus:outline-none transition ease-in-out duration-150">
+                                <div>Workspace: {{ Auth::user()->currentOrganization->name }}</div>
+                                <div class="ms-1">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </x-slot>
+
+                        <x-slot name="content">
+                            <div class="block px-4 py-2 text-xs text-gray-400">
+                                {{ __('Switch Workspace') }}
+                            </div>
+                            @foreach(Auth::user()->organizations as $org)
+                                @if($org->id !== Auth::user()->current_organization_id)
+                                    <form method="POST" action="{{ route('organizations.switch', $org) }}">
+                                        @csrf
+                                        <x-dropdown-link :href="route('organizations.switch', $org)"
+                                                onclick="event.preventDefault(); this.closest('form').submit();">
+                                            {{ $org->name }}
+                                        </x-dropdown-link>
+                                    </form>
+                                @endif
+                            @endforeach
+                            <div class="border-t border-gray-100"></div>
+                            <x-dropdown-link :href="route('organizations.create')">
+                                {{ __('+ Create Organization') }}
+                            </x-dropdown-link>
+                        </x-slot>
+                    </x-dropdown>
+                @else
+                    <a href="{{ route('organizations.create') }}" class="text-sm text-indigo-600 hover:text-indigo-900 font-semibold">
+                        {{ __('+ Create Organization') }}
+                    </a>
+                @endif
+
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">

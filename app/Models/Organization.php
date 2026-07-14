@@ -3,11 +3,19 @@
 namespace App\Models;
 
 use Database\Factories\OrganizationFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property Collection<int, User> $users
+ * @property Collection<int, Project> $projects
+ */
 class Organization extends Model
 {
     /** @use HasFactory<OrganizationFactory> */
