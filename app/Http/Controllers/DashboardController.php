@@ -6,6 +6,7 @@ use App\Enums\TaskStatus;
 use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Spatie\Activitylog\Models\Activity;
 
 class DashboardController extends Controller
 {
@@ -39,6 +40,14 @@ class DashboardController extends Controller
             'pending_count' => $assignedTasks->where('status', '!=', TaskStatus::Done)->count(),
         ];
 
-        return view('dashboard', compact('organization', 'projects', 'assignedTasks', 'stats'));
+        // Fetch Recent Activity scoped to workspace users
+        $orgUserIds = $organization->users()->pluck('users.id');
+        $activities = Activity::whereIn('causer_id', $orgUserIds)
+            ->with('causer')
+            ->latest()
+            ->limit(6)
+            ->get();
+
+        return view('dashboard', compact('organization', 'projects', 'assignedTasks', 'stats', 'activities'));
     }
 }
