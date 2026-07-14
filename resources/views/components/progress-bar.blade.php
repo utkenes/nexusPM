@@ -3,16 +3,15 @@
 @php
     $percent = $max > 0 ? min(100, round(($value / $max) * 100)) : 0;
     
-    $barColor = 'bg-indigo-600';
+    // Use Orange Accent as primary color, Emerald for complete
+    $barColor = 'bg-orange-500';
     if ($percent === 100) {
-        $barColor = 'bg-emerald-600';
-    } elseif ($percent < 30) {
-        $barColor = 'bg-rose-500';
+        $barColor = 'bg-emerald-500';
     }
 @endphp
 
 <div class="w-full flex items-center space-x-2">
-    <div class="flex-grow bg-gray-150 h-2 rounded-full overflow-hidden">
+    <div class="flex-grow bg-gray-800 h-2 rounded-full overflow-hidden">
         <div 
             class="h-full rounded-full transition-all duration-300 {{ $barColor }}" 
             style="width: {{ $percent }}%"

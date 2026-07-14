@@ -21,3 +21,4 @@ require __DIR__.'/dashboard.php';
 require __DIR__.'/organizations.php';
 require __DIR__.'/projects.php';
 require __DIR__.'/tasks.php';
+require __DIR__.'/notifications.php';

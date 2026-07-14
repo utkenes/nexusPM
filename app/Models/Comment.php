@@ -16,6 +16,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property int $user_id
  * @property string $content
  * @property Task $task
+ * @property User $user
  */
 class Comment extends Model
 {

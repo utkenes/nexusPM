@@ -1,10 +1,10 @@
 @props(['title', 'description' => null])
 
-<div class="flex justify-between items-center pb-5 border-b border-gray-150 mb-6">
+<div class="flex justify-between items-center pb-5 border-b border-gray-800 mb-6">
     <div>
-        <h2 class="text-xl font-bold text-gray-900 tracking-tight leading-none">{{ $title }}</h2>
+        <h2 class="text-xl font-bold text-gray-100 tracking-tight leading-none">{{ $title }}</h2>
         @if($description)
-            <p class="text-xs text-gray-400 mt-1.5 font-medium">{{ $description }}</p>
+            <p class="text-xs text-gray-500 mt-1.5 font-medium">{{ $description }}</p>
         @endif
     </div>
     @if(isset($actions))

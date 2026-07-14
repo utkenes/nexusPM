@@ -5,9 +5,11 @@ namespace App\Models;
 use App\Enums\TaskPriority;
 use App\Enums\TaskStatus;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -27,6 +29,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property int|null $updated_by
  * @property int|null $deleted_by
  * @property Project $project
+ * @property Collection<int, Label> $labels
+ * @property Collection<int, User> $watchers
  */
 class Task extends Model
 {
@@ -112,5 +116,21 @@ class Task extends Model
     public function attachments(): MorphMany
     {
         return $this->morphMany(Attachment::class, 'attachable');
+    }
+
+    /**
+     * Get the labels associated with this task.
+     */
+    public function labels(): BelongsToMany
+    {
+        return $this->belongsToMany(Label::class);
+    }
+
+    /**
+     * Get the watchers watching this task.
+     */
+    public function watchers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'task_watcher');
     }
 }

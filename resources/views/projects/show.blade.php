@@ -5,10 +5,10 @@
             description="{{ $project->description }}"
         >
             <x-slot name="actions">
-                <button onclick="openCreateTaskModal()" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 active:bg-indigo-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
+                <button onclick="openCreateTaskModal()" class="inline-flex items-center px-4 py-2 bg-orange-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-orange-700 active:bg-orange-950 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
                     + Add Task
                 </button>
-                <a href="{{ route('projects.edit', $project) }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-lg font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                <a href="{{ route('projects.edit', $project) }}" class="inline-flex items-center px-4 py-2 bg-gray-900 border border-gray-800 rounded-lg font-semibold text-xs text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-850 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition ease-in-out duration-150">
                     Settings
                 </a>
             </x-slot>
@@ -34,12 +34,12 @@
                 return searchMatch && priorityMatch && assigneeMatch;
             }
         }"
-        class="py-8"
+        class="py-8 bg-gray-950"
     >
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <!-- Search, Filters, and Utilities Row -->
-            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-white p-4 rounded-xl border border-gray-150 shadow-sm">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 bg-gray-900 p-4 rounded-xl border border-gray-800 shadow-sm">
                 <!-- Search Box -->
                 <x-search-box placeholder="Search tasks..." />
 
@@ -88,11 +88,11 @@
     <x-drawer />
 
     <!-- Create Task Modal -->
-    <div id="create-task-modal" class="hidden fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-xl border border-gray-150 w-full max-w-lg overflow-hidden">
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="text-lg font-bold text-gray-900">Add New Task</h3>
-                <button onclick="closeCreateTaskModal()" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+    <div id="create-task-modal" class="hidden fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-gray-900 rounded-xl shadow-xl border border-gray-800 w-full max-w-lg overflow-hidden">
+            <div class="p-6 border-b border-gray-800 flex justify-between items-center bg-gray-900">
+                <h3 class="text-lg font-bold text-gray-100">Add New Task</h3>
+                <button onclick="closeCreateTaskModal()" class="text-gray-400 hover:text-gray-200 focus:outline-none">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
@@ -101,25 +101,25 @@
             <form action="{{ route('tasks.store', $project) }}" method="POST" class="p-6 space-y-4">
                 @csrf
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700">Task Title</label>
-                    <input type="text" name="title" required class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg text-sm shadow-sm">
+                    <label class="block text-sm font-semibold text-gray-300">Task Title</label>
+                    <input type="text" name="title" required class="mt-1 block w-full border-gray-800 bg-gray-955 focus:border-orange-500 focus:ring-orange-500 rounded-lg text-sm shadow-sm text-gray-200">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700">Description</label>
-                    <textarea name="description" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg text-sm shadow-sm" rows="3"></textarea>
+                    <label class="block text-sm font-semibold text-gray-300">Description</label>
+                    <textarea name="description" class="mt-1 block w-full border-gray-800 bg-gray-955 focus:border-orange-500 focus:ring-orange-500 rounded-lg text-sm shadow-sm text-gray-200" rows="3"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700">Priority</label>
-                        <select name="priority" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg text-sm shadow-sm">
+                        <label class="block text-sm font-semibold text-gray-300">Priority</label>
+                        <select name="priority" class="mt-1 block w-full border-gray-800 bg-gray-955 focus:border-orange-500 focus:ring-orange-500 rounded-lg text-sm shadow-sm text-gray-300">
                             <option value="low">Low</option>
                             <option value="medium" selected>Medium</option>
                             <option value="high">High</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-sm font-semibold text-gray-700">Assign To</label>
-                        <select name="assigned_to" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg text-sm shadow-sm">
+                        <label class="block text-sm font-semibold text-gray-300">Assign To</label>
+                        <select name="assigned_to" class="mt-1 block w-full border-gray-800 bg-gray-955 focus:border-orange-500 focus:ring-orange-500 rounded-lg text-sm shadow-sm text-gray-300">
                             <option value="">Unassigned</option>
                             @foreach($organizationMembers as $member)
                                 <option value="{{ $member->id }}">{{ $member->name }}</option>
@@ -128,12 +128,12 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700">Due Date</label>
-                    <input type="date" name="due_date" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-lg text-sm shadow-sm">
+                    <label class="block text-sm font-semibold text-gray-300">Due Date</label>
+                    <input type="date" name="due_date" class="mt-1 block w-full border-gray-800 bg-gray-955 focus:border-orange-500 focus:ring-orange-500 rounded-lg text-sm shadow-sm text-gray-200">
                 </div>
-                <div class="pt-4 border-t border-gray-100 flex justify-end space-x-2">
-                    <button type="button" onclick="closeCreateTaskModal()" class="px-4 py-2 bg-gray-100 hover:bg-gray-250 text-gray-700 font-semibold text-sm rounded-lg">Cancel</button>
-                    <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-lg shadow-sm">Add Task</button>
+                <div class="pt-4 border-t border-gray-800 flex justify-end space-x-2">
+                    <button type="button" onclick="closeCreateTaskModal()" class="px-4 py-2 bg-gray-850 hover:bg-gray-800 text-gray-300 font-semibold text-sm rounded-lg">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-semibold text-sm rounded-lg shadow-sm">Add Task</button>
                 </div>
             </form>
         </div>

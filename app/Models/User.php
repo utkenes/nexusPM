@@ -21,6 +21,7 @@ use Spatie\Permission\Traits\HasRoles;
  * @property int|null $current_organization_id
  * @property Organization|null $currentOrganization
  * @property Collection<int, Organization> $organizations
+ * @property Collection<int, Task> $watchedTasks
  */
 #[Fillable(['name', 'email', 'password', 'current_organization_id'])]
 #[Hidden(['password', 'remember_token'])]
@@ -68,5 +69,13 @@ class User extends Authenticatable
         return $this->belongsToMany(Project::class, 'project_user')
             ->withPivot('role', 'joined_at')
             ->withTimestamps();
+    }
+
+    /**
+     * The tasks this user is watching.
+     */
+    public function watchedTasks(): BelongsToMany
+    {
+        return $this->belongsToMany(Task::class, 'task_watcher');
     }
 }

@@ -77,4 +77,20 @@ class TaskPolicy
         /** @var object{role: string}|null $pivot */
         return $pivot && $pivot->role === ProjectRole::Admin->value;
     }
+
+    /**
+     * Determine whether the user can watch the task.
+     */
+    public function watch(User $user, Task $task): bool
+    {
+        return $this->view($user, $task);
+    }
+
+    /**
+     * Determine whether the user can manage labels on the task.
+     */
+    public function label(User $user, Task $task): bool
+    {
+        return $this->update($user, $task);
+    }
 }
