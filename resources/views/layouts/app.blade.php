@@ -8,90 +8,147 @@
         <title>{{ config('app.name', 'NexusPM') }}</title>
 
         <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-        <!-- Scripts -->
+        <!-- Styles / Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+        
+        <style>
+            body {
+                font-family: 'Outfit', sans-serif;
+            }
+            /* Custom dark scrollbar styling */
+            ::-webkit-scrollbar {
+                width: 6px;
+                height: 6px;
+            }
+            ::-webkit-scrollbar-track {
+                background: #0b0f17;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: #1f2937;
+                border-radius: 4px;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: #374151;
+            }
+        </style>
     </head>
-    <body class="font-sans antialiased bg-gray-950 text-gray-100">
-        <div class="min-h-screen flex flex-col bg-gray-950">
-            @include('layouts.navigation')
+    <body class="bg-gray-950 text-gray-100 antialiased min-h-screen">
+        <!-- Main Layout Wrapper with Mobile Sidebar state -->
+        <div x-data="{ sidebarOpen: false }" class="flex min-h-screen">
 
-            <!-- Page Heading -->
-            @isset($header)
-                <header class="bg-gray-900 border-b border-gray-800/80">
-                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                        {{ $header }}
+            <!-- Sidebar Injected Here -->
+            @include('layouts.sidebar')
+
+            <!-- Main Content Area -->
+            <div class="flex-grow flex flex-col min-w-0 min-h-screen">
+                <!-- Top Navbar Bar (Hamburger menu on mobile, Notifications drop, Switcher, Profile) -->
+                <header class="h-16 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-6 shrink-0 sticky top-0 z-30">
+                    <div class="flex items-center space-x-3">
+                        <!-- Mobile Hamburger Button -->
+                        <button 
+                            @click="sidebarOpen = true"
+                            class="md:hidden p-2 rounded-lg text-gray-400 hover:text-gray-250 hover:bg-gray-850 border border-gray-800"
+                            aria-label="Open sidebar"
+                        >
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                        
+                        <!-- Page Title Slot (Optional fallback) -->
+                        <div class="hidden sm:block text-xs font-bold text-gray-500 uppercase tracking-widest">
+                            NexusPM Workspace
+                        </div>
+                    </div>
+
+                    <!-- Right Top Actions -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Notification center dropdown container -->
+                        @include('layouts.navigation')
                     </div>
                 </header>
-            @endisset
 
-            <!-- Page Content -->
-            <main class="flex-grow">
-                {{ $slot }}
-            </main>
+                <!-- Page Content -->
+                <main class="flex-grow p-6 sm:p-8">
+                    @if (isset($header))
+                        <div class="mb-6">
+                            {{ $header }}
+                        </div>
+                    @endif
+                    
+                    {{ $slot }}
+                </main>
+            </div>
         </div>
 
-        <!-- Reusable global Toast Notifications container -->
+        <!-- Global Toast Alert Portal -->
         <x-toast />
 
-        <!-- Initialize global Alpine stores -->
+        <!-- Flash Toast trigger scripts -->
+        @if(session('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'success', message: @json(session('success')) }}));
+                });
+            </script>
+        @endif
+
+        @if(session('error'))
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'error', message: @json(session('error')) }}));
+                });
+            </script>
+        @endif
+
+        <!-- Dynamic Drawer Store Declarations -->
         <script>
             document.addEventListener('alpine:init', () => {
                 Alpine.store('taskDrawer', {
                     open: false,
-                    taskId: null,
                     loading: false,
+                    taskId: null,
                     task: null,
                     orgLabels: [],
                     members: [],
                     activities: [],
                     isWatching: false,
                     triggerEl: null,
-                    
-                    openDrawer(taskId, triggerEl) {
+
+                    openDrawer(id, triggerEl) {
                         this.open = true;
-                        this.taskId = taskId;
                         this.loading = true;
-                        this.task = null;
-                        this.orgLabels = [];
-                        this.members = [];
-                        this.activities = [];
+                        this.taskId = id;
                         this.triggerEl = triggerEl;
                         
-                        fetch(`/tasks/${taskId}`)
+                        fetch(`/tasks/${id}`)
                             .then(res => res.json())
                             .then(data => {
                                 this.task = data.task;
-                                this.orgLabels = data.org_labels;
-                                this.members = data.members;
-                                this.activities = data.activities;
-                                this.isWatching = data.is_watching;
+                                this.orgLabels = data.org_labels || [];
+                                this.members = data.members || [];
+                                this.activities = data.activities || [];
+                                this.isWatching = data.is_watching || false;
                                 this.loading = false;
                                 
-                                // Focus first focusable inside drawer for accessibility
-                                setTimeout(() => {
+                                // Trap focus automatically
+                                this.$nextTick(() => {
                                     const container = document.getElementById('task-drawer-container');
                                     if (container) {
-                                        const focusables = container.querySelectorAll('button, input, textarea, select');
-                                        if (focusables.length > 1) {
-                                            focusables[1].focus(); // focus first content element, not the close button
-                                        }
+                                        const focusable = container.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+                                        if (focusable) focusable.focus();
                                     }
-                                }, 100);
-                            })
-                            .catch(() => {
-                                this.loading = false;
-                                this.open = false;
-                                window.dispatchEvent(new CustomEvent('toast', { 
-                                    detail: { type: 'error', message: 'Failed to load task details.' }
-                                }));
+                                });
                             });
                     },
-                    
+
                     closeDrawer() {
                         this.open = false;
+                        this.task = null;
                         if (this.triggerEl) {
                             this.triggerEl.focus();
                         }
@@ -109,103 +166,74 @@
                         .then(data => {
                             if (data.success) {
                                 this.isWatching = data.is_watching;
-                                this.task.watchers = data.watchers;
-                                window.dispatchEvent(new CustomEvent('toast', { 
-                                    detail: { type: 'success', message: this.isWatching ? 'Started watching task' : 'Stopped watching task' }
-                                }));
+                                if (data.is_watching) {
+                                    // add user to watchers list
+                                    this.task.watchers.push(data.user);
+                                    window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'success', message: 'You are now watching this task' }}));
+                                } else {
+                                    // remove user from watchers list
+                                    this.task.watchers = this.task.watchers.filter(w => w.id !== data.user.id);
+                                    window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'success', message: 'Stopped watching task' }}));
+                                }
                             }
                         });
                     },
 
-                    updateAssignee(userId) {
+                    updateAssignee(memberId) {
                         fetch(`/tasks/${this.taskId}`, {
                             method: 'PATCH',
                             headers: {
                                 'Content-Type': 'application/json',
+                                'Accept': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             },
-                            body: JSON.stringify({ assigned_to: userId })
+                            body: JSON.stringify({ assigned_to: memberId })
                         })
                         .then(res => res.json())
                         .then(data => {
                             if (data.success) {
-                                window.dispatchEvent(new CustomEvent('toast', { 
-                                    detail: { type: 'success', message: 'Task assignee updated' }
-                                }));
-                                // Refresh current task card display
-                                const card = document.getElementById(`task-${this.taskId}`);
-                                if (card) {
-                                    card.setAttribute('data-assignee', userId || '');
+                                this.task.assigned_to = memberId;
+                                // update the card's visual dataset so filters update
+                                if (this.triggerEl) {
+                                    this.triggerEl.setAttribute('data-assignee', memberId || '');
+                                    // refresh avatar dynamically if assignee updated
+                                    location.reload();
                                 }
-                                // Re-load task detail to update UI
-                                this.openDrawer(this.taskId, this.triggerEl);
+                                window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'success', message: 'Assignee updated successfully!' }}));
                             }
                         });
                     },
 
                     toggleLabel(labelId, isChecked) {
-                        const currentLabelIds = this.task.labels.map(l => l.id);
-                        let nextLabelIds = [];
+                        let currentLabels = this.task.labels.map(l => l.id);
                         if (isChecked) {
-                            nextLabelIds = [...currentLabelIds, labelId];
+                            if (!currentLabels.includes(labelId)) currentLabels.push(labelId);
                         } else {
-                            nextLabelIds = currentLabelIds.filter(id => id !== labelId);
+                            currentLabels = currentLabels.filter(id => id !== labelId);
                         }
 
                         fetch(`/tasks/${this.taskId}/labels`, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
+                                'Accept': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                             },
-                            body: JSON.stringify({ labels: nextLabelIds })
+                            body: JSON.stringify({ labels: currentLabels })
                         })
                         .then(res => res.json())
                         .then(data => {
                             if (data.success) {
-                                this.task.labels = data.labels;
-                                window.dispatchEvent(new CustomEvent('toast', { 
-                                    detail: { type: 'success', message: 'Task labels updated' }
-                                }));
-                                // Also trigger reload on Kanban column to reflect label changes instantly
-                                const card = document.getElementById(`task-${this.taskId}`);
-                                if (card) {
-                                    // Refresh labels container in card dynamically
-                                    fetch(`/tasks/${this.taskId}`)
-                                        .then(r => r.json())
-                                        .then(d => {
-                                            // Re-render task card elements or just update page
-                                            window.location.reload(); // Simple sync
-                                        });
-                                }
+                                // refresh label objects in task drawer state
+                                this.task.labels = this.orgLabels.filter(ol => currentLabels.includes(ol.id));
+                                window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'success', message: 'Task labels updated!' }}));
+                                // reload after short timeout to update Kanban card visually
+                                setTimeout(() => location.reload(), 800);
                             }
                         });
                     }
                 });
             });
         </script>
-
-        <!-- Dispatch session flash alerts as custom toast events -->
-        @if(session('success'))
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'success', message: "{{ session('success') }}" }}));
-                });
-            </script>
-        @endif
-        @if(session('warning'))
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'warning', message: "{{ session('warning') }}" }}));
-                });
-            </script>
-        @endif
-        @if(session('error'))
-            <script>
-                window.addEventListener('DOMContentLoaded', () => {
-                    window.dispatchEvent(new CustomEvent('toast', { detail: { type: 'error', message: "{{ session('error') }}" }}));
-                });
-            </script>
-        @endif
     </body>
 </html>

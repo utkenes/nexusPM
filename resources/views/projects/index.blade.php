@@ -1,20 +1,28 @@
 <x-app-layout>
-    <x-slot name="header">
-        <x-section-header title="Projects" description="Manage projects inside your active workspace.">
-            <x-slot name="actions">
-                @if($organization)
-                    <a href="{{ route('projects.create') }}" class="inline-flex items-center px-4 py-2 bg-orange-600 border border-transparent rounded-lg font-semibold text-xs text-white uppercase tracking-widest hover:bg-orange-700 active:bg-orange-955 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition ease-in-out duration-150 shadow-sm">
-                        + New Project
-                    </a>
-                @endif
-            </x-slot>
-        </x-section-header>
-    </x-slot>
+    <!-- Page Header -->
+    <x-page-header title="Projects" description="Manage projects inside your active workspace.">
+        <x-slot name="actions">
+            @if($organization)
+                <a href="{{ route('projects.create') }}" class="inline-flex items-center px-4 py-2 bg-orange-600 hover:bg-orange-700 active:bg-orange-955 text-white font-semibold text-xs uppercase tracking-widest rounded-xl transition shadow-lg shadow-orange-500/20">
+                    + New Project
+                </a>
+            @endif
+        </x-slot>
+    </x-page-header>
 
-    <div class="py-12 bg-gray-950">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-gray-900 overflow-hidden shadow-sm sm:rounded-xl border border-gray-800 p-6">
-                
+    <div class="space-y-8">
+        <!-- Top statistics row -->
+        @if($organization)
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <x-metric-card title="Total Projects" value="{{ $projects->count() }}" />
+                <x-metric-card title="Completed Projects" value="{{ $projects->where('status.value', 'completed')->count() }}" />
+                <x-metric-card title="Active Workspace" value="{{ $organization->name }}" />
+            </div>
+        @endif
+
+        <!-- Projects Grid -->
+        <x-panel title="Projects List" :padding="false">
+            <div class="p-6">
                 @if(!$organization)
                     <x-empty-state 
                         title="No active workspace" 
@@ -32,33 +40,13 @@
                         icon="folder"
                     />
                 @else
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         @foreach($projects as $proj)
-                            <div class="p-6 border border-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between space-y-4 bg-gray-900/65 hover:border-orange-500/30">
-                                <div class="space-y-2">
-                                    <div class="flex justify-between items-start">
-                                        <h4 class="text-base font-bold text-gray-250 leading-snug">
-                                            <a href="{{ route('projects.show', $proj) }}" class="hover:text-orange-500">
-                                                {{ $proj->title }}
-                                            </a>
-                                        </h4>
-                                        <x-badge :value="$proj->status->value" type="status" />
-                                    </div>
-                                    <p class="text-xs text-gray-450 line-clamp-2 leading-relaxed">{{ $proj->description }}</p>
-                                </div>
-                                <div class="border-t border-gray-850 pt-4 flex justify-between items-center text-[11px] text-gray-500">
-                                    <span class="flex items-center space-x-1.5">
-                                        <x-avatar :name="$proj->creator->name" size="xs" />
-                                        <span class="text-gray-400">{{ $proj->creator->name }}</span>
-                                    </span>
-                                    <a href="{{ route('projects.edit', $proj) }}" class="text-orange-500 hover:text-orange-400 font-bold">Edit</a>
-                                </div>
-                            </div>
+                            <x-project-card :project="$proj" />
                         @endforeach
                     </div>
                 @endif
-
             </div>
-        </div>
+        </x-panel>
     </div>
 </x-app-layout>

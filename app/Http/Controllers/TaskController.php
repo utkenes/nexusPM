@@ -8,6 +8,7 @@ use App\Actions\Task\ToggleWatcherAction;
 use App\Actions\Task\UpdateTaskStatusAction;
 use App\Enums\TaskStatus;
 use App\Http\Requests\StoreTaskRequest;
+use App\Models\Comment;
 use App\Models\Label;
 use App\Models\Project;
 use App\Models\Task;
@@ -67,8 +68,8 @@ class TaskController extends Controller
             ->get();
 
         // Highlight mentions in comment content
-        $mentionService = app(\App\Services\Comment\MentionParserService::class);
-        /** @var \App\Models\Comment $comment */
+        $mentionService = app(MentionParserService::class);
+        /** @var Comment $comment */
         foreach ($task->comments as $comment) {
             $comment->content = $mentionService->highlightMentions($comment->content, $organization);
         }

@@ -23,11 +23,11 @@ class MentionParserService
 
         $mentionedHandles = array_map('strtolower', array_unique($matches[1]));
         $members = $organization->users()->get();
-        /** @var array<int, \App\Models\User> $matchedUsers */
+        /** @var array<int, User> $matchedUsers */
         $matchedUsers = [];
 
         foreach ($members as $user) {
-            /** @var \App\Models\User $user */
+            /** @var User $user */
             $slugName = Str::slug($user->name);
             $compactName = strtolower(str_replace(' ', '', $user->name));
 

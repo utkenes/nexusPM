@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Services\Notification\NotificationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Notifications\DatabaseNotification;
 
 class NotificationController extends Controller
 {
@@ -39,7 +40,7 @@ class NotificationController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        $notification = \Illuminate\Notifications\DatabaseNotification::find($id);
+        $notification = DatabaseNotification::find($id);
         if (! $notification) {
             return response()->json(['error' => 'Notification not found.'], 404);
         }
