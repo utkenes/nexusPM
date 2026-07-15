@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\TaskStatus;
 use App\Models\Task;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Models\Activity;
 
@@ -31,8 +32,8 @@ class DashboardController extends Controller
         $projects->each(function ($project) {
             $totalTasks = $project->tasks()->count();
             $completedTasks = $project->tasks()->where('status', TaskStatus::Done)->count();
-            $project->completion_percentage = $totalTasks > 0 
-                ? (int) round(($completedTasks / $totalTasks) * 100) 
+            $project->completion_percentage = $totalTasks > 0
+                ? (int) round(($completedTasks / $totalTasks) * 100)
                 : 0;
             $project->total_tasks_count = $totalTasks;
             $project->completed_tasks_count = $completedTasks;
@@ -51,8 +52,8 @@ class DashboardController extends Controller
             'pending_count' => $assignedTasks->where('status', '!=', TaskStatus::Done)->count(),
         ];
 
-        $stats['completion_rate'] = $stats['tasks_count'] > 0 
-            ? (int) round(($stats['completed_count'] / $stats['tasks_count']) * 100) 
+        $stats['completion_rate'] = $stats['tasks_count'] > 0
+            ? (int) round(($stats['completed_count'] / $stats['tasks_count']) * 100)
             : 0;
 
         // Fetch overdue tasks assigned to the current user
@@ -60,7 +61,7 @@ class DashboardController extends Controller
             ->whereIn('project_id', $projectIds)
             ->where('status', '!=', TaskStatus::Done)
             ->whereNotNull('due_date')
-            ->where('due_date', '<', \Carbon\Carbon::today())
+            ->where('due_date', '<', Carbon::today())
             ->with('project')
             ->get();
 

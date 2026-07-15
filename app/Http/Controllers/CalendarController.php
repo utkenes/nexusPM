@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 
 class CalendarController extends Controller
 {
@@ -16,7 +16,7 @@ class CalendarController extends Controller
         $user = $request->user();
         $organization = $user->currentOrganization;
 
-        if (!$organization) {
+        if (! $organization) {
             return redirect()->route('organizations.index')
                 ->with('warning', 'Please select or create an organization first.');
         }
@@ -38,7 +38,7 @@ class CalendarController extends Controller
 
         $startOfMonth = Carbon::create($year, $month, 1);
         $endOfMonth = $startOfMonth->copy()->endOfMonth();
-        
+
         $daysInMonth = $startOfMonth->daysInMonth;
         $startOfWeekDay = $startOfMonth->dayOfWeekIso; // 1 = Monday, 7 = Sunday
         $endOfWeekDay = $endOfMonth->dayOfWeekIso;

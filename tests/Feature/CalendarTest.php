@@ -14,7 +14,9 @@ class CalendarTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Organization $organization;
+
     protected Project $project;
 
     protected function setUp(): void
@@ -75,7 +77,7 @@ class CalendarTest extends TestCase
         ]));
 
         $response->assertStatus(200);
-        
+
         $tasksByDay = $response->viewData('tasksByDay');
         $this->assertTrue($tasksByDay->has('2026-07-15'));
         $this->assertFalse($tasksByDay->has('2026-08-15'));

@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Actions\Task\AssignLabelsAction;
+use App\Actions\Task\BulkUpdateTasksAction;
 use App\Actions\Task\CreateTaskAction;
 use App\Actions\Task\ToggleWatcherAction;
 use App\Actions\Task\UpdateTaskStatusAction;
-use App\Actions\Task\BulkUpdateTasksAction;
 use App\Enums\TaskStatus;
 use App\Http\Requests\StoreTaskRequest;
 use App\Models\Comment;
@@ -21,6 +21,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Validation\ValidationException;
 use Spatie\Activitylog\Models\Activity;
 
 class TaskController extends Controller
@@ -195,9 +196,9 @@ class TaskController extends Controller
                 'assigned_to' => ['nullable', 'exists:users,id'],
                 'delete' => ['nullable', 'boolean'],
             ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             return response()->json([
-                'errors' => $e->errors()
+                'errors' => $e->errors(),
             ], 422);
         }
 
@@ -205,7 +206,7 @@ class TaskController extends Controller
         foreach ($data['task_ids'] as $id) {
             $task = Task::findOrFail($id);
             $this->authorize('update', $task);
-            if (!empty($data['delete'])) {
+            if (! empty($data['delete'])) {
                 $this->authorize('delete', $task);
             }
         }

@@ -15,9 +15,13 @@ class BulkActionTest extends TestCase
     use RefreshDatabase;
 
     protected User $user;
+
     protected Organization $organization;
+
     protected Project $project;
+
     protected Task $task1;
+
     protected Task $task2;
 
     protected function setUp(): void
