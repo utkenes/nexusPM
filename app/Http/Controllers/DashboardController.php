@@ -27,6 +27,17 @@ class DashboardController extends Controller
         $projects = $organization->projects()->latest()->get();
         $projectIds = $projects->pluck('id');
 
+        // Calculate completion rates for projects
+        $projects->each(function ($project) {
+            $totalTasks = $project->tasks()->count();
+            $completedTasks = $project->tasks()->where('status', TaskStatus::Done)->count();
+            $project->completion_percentage = $totalTasks > 0 
+                ? (int) round(($completedTasks / $totalTasks) * 100) 
+                : 0;
+            $project->total_tasks_count = $totalTasks;
+            $project->completed_tasks_count = $completedTasks;
+        });
+
         $assignedTasks = Task::where('assigned_to', $user->id)
             ->whereIn('project_id', $projectIds)
             ->with(['project', 'assignee'])
@@ -40,6 +51,19 @@ class DashboardController extends Controller
             'pending_count' => $assignedTasks->where('status', '!=', TaskStatus::Done)->count(),
         ];
 
+        $stats['completion_rate'] = $stats['tasks_count'] > 0 
+            ? (int) round(($stats['completed_count'] / $stats['tasks_count']) * 100) 
+            : 0;
+
+        // Fetch overdue tasks assigned to the current user
+        $overdueTasks = Task::where('assigned_to', $user->id)
+            ->whereIn('project_id', $projectIds)
+            ->where('status', '!=', TaskStatus::Done)
+            ->whereNotNull('due_date')
+            ->where('due_date', '<', \Carbon\Carbon::today())
+            ->with('project')
+            ->get();
+
         // Fetch Recent Activity scoped to workspace users
         $orgUserIds = $organization->users()->pluck('users.id');
         $activities = Activity::whereIn('causer_id', $orgUserIds)
@@ -48,6 +72,6 @@ class DashboardController extends Controller
             ->limit(6)
             ->get();
 
-        return view('dashboard', compact('organization', 'projects', 'assignedTasks', 'stats', 'activities'));
+        return view('dashboard', compact('organization', 'projects', 'assignedTasks', 'stats', 'activities', 'overdueTasks'));
     }
 }

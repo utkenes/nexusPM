@@ -6,6 +6,7 @@ use App\Actions\Task\AssignLabelsAction;
 use App\Actions\Task\CreateTaskAction;
 use App\Actions\Task\ToggleWatcherAction;
 use App\Actions\Task\UpdateTaskStatusAction;
+use App\Actions\Task\BulkUpdateTasksAction;
 use App\Enums\TaskStatus;
 use App\Http\Requests\StoreTaskRequest;
 use App\Models\Comment;
@@ -178,6 +179,42 @@ class TaskController extends Controller
         return response()->json([
             'success' => true,
             'task' => $task,
+        ]);
+    }
+
+    /**
+     * Perform bulk updates on tasks.
+     */
+    public function bulkUpdate(Request $request, BulkUpdateTasksAction $action): JsonResponse
+    {
+        try {
+            $data = $request->validate([
+                'task_ids' => ['required', 'array'],
+                'task_ids.*' => ['exists:tasks,id'],
+                'status' => ['nullable', 'string'],
+                'assigned_to' => ['nullable', 'exists:users,id'],
+                'delete' => ['nullable', 'boolean'],
+            ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors()
+            ], 422);
+        }
+
+        // Perform authorization checks on tasks
+        foreach ($data['task_ids'] as $id) {
+            $task = Task::findOrFail($id);
+            $this->authorize('update', $task);
+            if (!empty($data['delete'])) {
+                $this->authorize('delete', $task);
+            }
+        }
+
+        $action->execute($data['task_ids'], $data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tasks updated successfully in bulk.',
         ]);
     }
 }

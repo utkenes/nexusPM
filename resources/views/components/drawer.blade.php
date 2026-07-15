@@ -45,8 +45,8 @@
                         <!-- Watcher Toggle Button -->
                         <button 
                             @click="$store.taskDrawer.toggleWatch()"
-                            class="inline-flex items-center px-3.5 py-1.5 border border-gray-800 hover:border-gray-700 rounded-xl text-xs font-bold transition shadow-sm"
-                            :class="$store.taskDrawer.isWatching ? 'bg-orange-600 text-white border-orange-500 hover:bg-orange-700' : 'bg-gray-950 text-gray-400 hover:text-gray-250'"
+                            class="inline-flex items-center px-3.5 py-1.5 border rounded-xl font-bold text-xs uppercase tracking-widest transition duration-200 ease-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-950 cursor-pointer shadow-sm"
+                            :class="$store.taskDrawer.isWatching ? 'bg-orange-600 border-transparent text-white hover:bg-orange-700' : 'bg-gray-900 border-gray-800 text-gray-300 hover:bg-gray-850'"
                         >
                             <svg class="h-3.5 w-3.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -153,8 +153,8 @@
                                         });
                                     "
                                 >
-                                    <input type="text" name="content" required placeholder="Add a comment... (use @name to mention)" class="flex-grow border-gray-800 bg-gray-950 focus:border-orange-500 focus:ring-orange-500 rounded-xl text-xs font-semibold text-gray-200 placeholder-gray-600">
-                                    <button type="submit" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-sm">Post</button>
+                                    <x-input type="text" name="content" required placeholder="Add a comment... (use @name to mention)" class="flex-grow text-xs py-2 px-3.5" />
+                                    <x-button type="submit" variant="primary" class="px-4 py-2">Post</x-button>
                                 </form>
                             </div>
 
@@ -217,17 +217,17 @@
                         <div class="space-y-6 lg:border-l border-gray-850 lg:pl-6">
                             <!-- Assignee Dropdown -->
                             <div>
-                                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Assignee</h4>
-                                <select 
-                                    :value="$store.taskDrawer.task ? $store.taskDrawer.task.assigned_to : ''" 
+                                <h4 class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Assignee</h4>
+                                <x-select 
+                                    ::value="$store.taskDrawer.task ? $store.taskDrawer.task.assigned_to : ''" 
                                     @change="$store.taskDrawer.updateAssignee($event.target.value)"
-                                    class="mt-2 block w-full border-gray-800 rounded-xl text-xs bg-gray-950 text-gray-300 focus:ring-2 focus:ring-orange-500 focus:border-transparent font-semibold py-2"
+                                    class="text-xs"
                                 >
                                     <option value="">Unassigned</option>
                                     <template x-for="m in $store.taskDrawer.members" :key="m.id">
                                         <option :value="m.id" x-text="m.name" :selected="$store.taskDrawer.task && m.id === $store.taskDrawer.task.assigned_to"></option>
                                     </template>
-                                </select>
+                                </x-select>
                             </div>
 
                             <!-- Watchers Profile Avatars list -->

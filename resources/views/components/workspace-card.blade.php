@@ -40,9 +40,9 @@
         @else
             <form method="POST" action="{{ route('organizations.switch', $org) }}">
                 @csrf
-                <button type="submit" class="inline-flex items-center px-3 py-1.5 bg-gray-800 border border-gray-700 hover:bg-gray-750 text-gray-300 font-bold text-xs rounded-lg transition">
-                    Switch to Workspace
-                </button>
+                <x-button type="submit" variant="secondary" class="py-1.5 px-3">
+                    Switch
+                </x-button>
             </form>
         @endif
     </div>

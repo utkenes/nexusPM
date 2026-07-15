@@ -90,14 +90,24 @@
                     @else
                         <div class="divide-y divide-gray-850">
                             @foreach($projects as $proj)
-                                <div class="px-6 py-4 flex justify-between items-center hover:bg-gray-850/40 transition duration-150">
-                                    <div class="space-y-1">
+                                <div class="px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 hover:bg-gray-850/40 transition duration-150">
+                                    <div class="space-y-1 flex-grow">
                                         <a href="{{ route('projects.show', $proj) }}" class="text-orange-500 hover:text-orange-400 font-bold text-sm tracking-tight transition">
                                             {{ $proj->title }}
                                         </a>
                                         <p class="text-xs text-gray-400 line-clamp-1 leading-relaxed">{{ $proj->description }}</p>
                                     </div>
-                                    <x-badge :value="$proj->status->value" type="status" />
+                                    <div class="flex items-center space-x-6 shrink-0 justify-between sm:justify-end">
+                                        <!-- Progress Bar -->
+                                        <div class="w-24 space-y-1">
+                                            <div class="flex justify-between text-[9px] font-black text-gray-500 uppercase tracking-widest">
+                                                <span>Progress</span>
+                                                <span>{{ $proj->completion_percentage }}%</span>
+                                            </div>
+                                            <x-progress-bar :value="$proj->completion_percentage" :max="100" />
+                                        </div>
+                                        <x-badge :value="$proj->status->value" type="status" />
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
@@ -125,6 +135,55 @@
 
             <!-- Right: Team Members, Deadlines & Workspace Summary -->
             <div class="space-y-8">
+                
+                <!-- Productivity Completion Rate Widget -->
+                <x-panel title="My Productivity">
+                    <div class="flex items-center justify-between p-2">
+                        <div class="space-y-1 flex-grow">
+                            <span class="text-xs font-bold text-gray-400 block">Task Completion Rate</span>
+                            <span class="text-2xl font-black text-white tracking-tight">{{ $stats['completion_rate'] }}%</span>
+                            <span class="text-[10px] text-gray-550 block font-semibold mt-0.5">Done: {{ $stats['completed_count'] }} / Total: {{ $stats['tasks_count'] }}</span>
+                        </div>
+                        
+                        <!-- Circular visual progress bar via Tailwind gradients -->
+                        <div class="relative h-16 w-16 flex items-center justify-center shrink-0">
+                            <!-- SVG progress ring -->
+                            <svg class="h-16 w-16 transform -rotate-90">
+                                <circle cx="32" cy="32" r="26" stroke="#1f2937" stroke-width="4" fill="transparent" />
+                                <circle cx="32" cy="32" r="26" stroke="#ea580c" stroke-width="4" fill="transparent" 
+                                    stroke-dasharray="163.36" 
+                                    stroke-dashoffset="{{ 163.36 - (163.36 * $stats['completion_rate']) / 100 }}" 
+                                    stroke-linecap="round"
+                                />
+                            </svg>
+                            <span class="absolute text-[10px] font-black text-gray-200">{{ $stats['completion_rate'] }}%</span>
+                        </div>
+                    </div>
+                </x-panel>
+
+                <!-- Overdue Tasks Warning Widget -->
+                @if($overdueTasks->isNotEmpty())
+                    <x-panel title="⚠️ Overdue Tasks">
+                        <div class="space-y-3">
+                            @foreach($overdueTasks as $task)
+                                <div class="p-3 bg-red-950/10 border border-red-900/30 rounded-xl space-y-1.5 hover:bg-red-950/20 transition-all duration-150">
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-[9px] font-black text-red-400 uppercase tracking-widest">
+                                            Overdue - {{ $task->due_date->diffForHumans() }}
+                                        </span>
+                                        <x-badge :value="$task->priority->value" type="priority" />
+                                    </div>
+                                    <h4 class="font-bold text-gray-200 text-xs truncate leading-snug">
+                                        <a href="{{ route('projects.show', $task->project) }}" class="hover:text-red-400 transition">
+                                            {{ $task->title }}
+                                        </a>
+                                    </h4>
+                                    <span class="text-[9px] text-gray-500 font-bold block">{{ $task->project->title }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </x-panel>
+                @endif
                 
                 <!-- Workspace Summary Panel -->
                 <x-panel title="Workspace Info">

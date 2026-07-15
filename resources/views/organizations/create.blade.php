@@ -1,40 +1,51 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
-            {{ __('Create New Organization') }}
-        </h2>
+        <x-section-header 
+            title="Create New Organization" 
+            description="Establish a new workspace organization to manage projects and team collaboration."
+        />
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-8 bg-gray-955">
         <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg border border-gray-100 p-6">
-                
+            <x-card>
                 <form method="POST" action="{{ route('organizations.store') }}" class="space-y-6">
                     @csrf
 
                     <!-- Name -->
-                    <div>
-                        <x-input-label for="name" :value="__('Organization Name')" />
-                        <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name')" required autofocus autocomplete="name" placeholder="e.g. Acme Corporation" />
-                        <x-input-error class="mt-2" :messages="$errors->get('name')" />
-                    </div>
+                    <x-form-group label="Organization Name" :error="$errors->first('name')" required>
+                        <x-input 
+                            id="name" 
+                            name="name" 
+                            type="text" 
+                            :value="old('name')" 
+                            required 
+                            autofocus 
+                            autocomplete="name" 
+                            placeholder="e.g. Acme Corporation" 
+                        />
+                    </x-form-group>
 
                     <!-- Slug -->
-                    <div>
-                        <x-input-label for="slug" :value="__('Slug (Globally Unique)')" />
-                        <x-text-input id="slug" name="slug" type="text" class="mt-1 block w-full" :value="old('slug')" required placeholder="e.g. acme-corp" />
-                        <x-input-error class="mt-2" :messages="$errors->get('slug')" />
-                    </div>
+                    <x-form-group label="Slug (Globally Unique)" :error="$errors->first('slug')" required>
+                        <x-input 
+                            id="slug" 
+                            name="slug" 
+                            type="text" 
+                            :value="old('slug')" 
+                            required 
+                            placeholder="e.g. acme-corp" 
+                        />
+                    </x-form-group>
 
-                    <div class="flex items-center gap-4">
-                        <x-primary-button>{{ __('Create') }}</x-primary-button>
-                        <a href="{{ route('organizations.index') }}" class="text-sm text-gray-600 hover:text-gray-900">
-                            {{ __('Cancel') }}
+                    <div class="flex items-center space-x-3 pt-4 border-t border-gray-850">
+                        <x-button type="submit" variant="primary">Create</x-button>
+                        <a href="{{ route('organizations.index') }}" class="inline-flex items-center px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-500 hover:text-gray-300 transition duration-150">
+                            Cancel
                         </a>
                     </div>
                 </form>
-
-            </div>
+            </x-card>
         </div>
     </div>
 

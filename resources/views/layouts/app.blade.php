@@ -21,22 +21,22 @@
             }
             /* Custom dark scrollbar styling */
             ::-webkit-scrollbar {
-                width: 6px;
-                height: 6px;
+                width: 5px;
+                height: 5px;
             }
             ::-webkit-scrollbar-track {
-                background: #0b0f17;
+                background: #090d16;
             }
             ::-webkit-scrollbar-thumb {
                 background: #1f2937;
-                border-radius: 4px;
+                border-radius: 9999px;
             }
             ::-webkit-scrollbar-thumb:hover {
-                background: #374151;
+                background: #ea580c;
             }
         </style>
     </head>
-    <body class="bg-gray-950 text-gray-100 antialiased min-h-screen">
+    <body class="bg-gray-950 text-gray-100 antialiased min-h-screen caret-orange-500 selection:bg-orange-500/30">
         <!-- Main Layout Wrapper with Mobile Sidebar state -->
         <div x-data="{ sidebarOpen: false }" class="flex min-h-screen">
 
@@ -233,6 +233,107 @@
                         });
                     }
                 });
+            });
+        </script>
+
+        <!-- Keyboard Shortcuts Help Modal -->
+        <div 
+            x-data="{ open: false }" 
+            x-show="open"
+            @toggle-shortcuts-modal.window="open = !open"
+            @keydown.escape.window="open = false"
+            class="fixed inset-0 bg-gray-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            style="display: none;"
+        >
+            <div @click.outside="open = false" class="bg-gray-900 rounded-2xl shadow-2xl border border-gray-800 w-full max-w-md overflow-hidden transform transition-all p-6 space-y-6">
+                <div class="flex justify-between items-center border-b border-gray-850 pb-4">
+                    <h3 class="text-sm font-black text-gray-200 uppercase tracking-widest flex items-center">
+                        <span class="mr-2">⌨️</span> Keyboard Shortcuts
+                    </h3>
+                    <button @click="open = false" class="text-gray-400 hover:text-gray-200 focus:outline-none">
+                        <svg class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="space-y-3.5">
+                    <div class="flex justify-between items-center text-xs font-semibold">
+                        <span class="text-gray-450">Create Task (Kanban)</span>
+                        <kbd class="px-2 py-1 bg-gray-950 border border-gray-850 rounded-lg text-orange-500 font-bold">C / N</kbd>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-semibold">
+                        <span class="text-gray-450">Focus Search Box</span>
+                        <kbd class="px-2 py-1 bg-gray-950 border border-gray-850 rounded-lg text-orange-500 font-bold">/</kbd>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-semibold">
+                        <span class="text-gray-450">Toggle Bulk Selection Mode</span>
+                        <kbd class="px-2 py-1 bg-gray-950 border border-gray-850 rounded-lg text-orange-500 font-bold">B</kbd>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-semibold">
+                        <span class="text-gray-450">Navigate to Dashboard</span>
+                        <kbd class="px-2 py-1 bg-gray-950 border border-gray-850 rounded-lg text-orange-500 font-bold">T</kbd>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-semibold">
+                        <span class="text-gray-450">Navigate to Projects</span>
+                        <kbd class="px-2 py-1 bg-gray-950 border border-gray-850 rounded-lg text-orange-500 font-bold">P</kbd>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-semibold">
+                        <span class="text-gray-450">Close Drawer or Modal</span>
+                        <kbd class="px-2 py-1 bg-gray-950 border border-gray-850 rounded-lg text-orange-500 font-bold">Esc</kbd>
+                    </div>
+                    <div class="flex justify-between items-center text-xs font-semibold">
+                        <span class="text-gray-450">Show Shortcuts Help</span>
+                        <kbd class="px-2 py-1 bg-gray-950 border border-gray-850 rounded-lg text-orange-500 font-bold">?</kbd>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('keydown', function(e) {
+                // If user is typing inside input, textarea or select, ignore shortcuts
+                if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName) || document.activeElement.isContentEditable) {
+                    // Allow escape key to unfocus/close even if focused
+                    if (e.key === 'Escape') {
+                        document.activeElement.blur();
+                    }
+                    return;
+                }
+
+                switch(e.key.toLowerCase()) {
+                    case '?':
+                        window.dispatchEvent(new CustomEvent('toggle-shortcuts-modal'));
+                        e.preventDefault();
+                        break;
+                    case 'c':
+                    case 'n':
+                        if (typeof openCreateTaskModal === 'function') {
+                            openCreateTaskModal();
+                            e.preventDefault();
+                        }
+                        break;
+                    case '/':
+                        const searchInput = document.querySelector('input[type="search"]');
+                        if (searchInput) {
+                            searchInput.focus();
+                            e.preventDefault();
+                        }
+                        break;
+                    case 'b':
+                        const bulkBtn = document.getElementById('bulk-mode-btn');
+                        if (bulkBtn) {
+                            bulkBtn.click();
+                            e.preventDefault();
+                        }
+                        break;
+                    case 't':
+                        window.location.href = "{{ route('dashboard') }}";
+                        break;
+                    case 'p':
+                        window.location.href = "{{ route('projects.index') }}";
+                        break;
+                }
             });
         </script>
     </body>

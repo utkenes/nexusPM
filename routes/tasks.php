@@ -12,4 +12,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('tasks/{task}/comments', [CommentController::class, 'store'])->name('comments.store');
     Route::post('tasks/{task}/watch', [TaskController::class, 'toggleWatch'])->name('tasks.toggleWatch');
     Route::post('tasks/{task}/labels', [TaskController::class, 'assignLabels'])->name('tasks.assignLabels');
+    Route::post('tasks/bulk', [TaskController::class, 'bulkUpdate'])->name('tasks.bulkUpdate');
 });
